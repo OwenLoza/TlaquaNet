@@ -44,6 +44,12 @@ export const createUser = (username, displayName) =>
 export const getUsers = () =>
     request('/api/users/');
 
+export const updateUser = (userId, displayName) =>
+    request(`/api/users/${userId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ display_name: displayName }),
+    });
+
 // ── Posts ─────────────────────────────────────────────────────
 
 export const createPost = (content, authorId) =>

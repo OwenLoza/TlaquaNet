@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models import User, Event
-from ..schemas import UserCreate, UserResponse
+from ..schemas import UserCreate, UserResponse, UserUpdate
 
 router = APIRouter(
     prefix="/api/users",
@@ -100,3 +100,44 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
             detail=f"User with id {user_id} not found"
         )
     return user
+
+
+@router.put(
+    "/{user_id}",
+    response_model=UserResponse,
+    summary="Update a user's display name",
+)
+def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)):
+    """
+    Update a user's display name.
+    
+    - **display_name**: The new name to show in the UI
+    
+    Also logs a 'user_updated' event to the events table.
+    """
+    db_user = db.query(User).filter(User.id == user_id).first()
+    if not db_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with id {user_id} not found"
+        )
+
+    old_display_name = db_user.display_name
+    db_user.display_name = user_update.display_name
+
+    # ── Analytics: Log the event ──────────────────────────────────
+    event = Event(
+        event_type="user_updated",
+        user_id=db_user.id,
+        target_id=db_user.id,
+        event_metadata=json.dumps({
+            "old_display_name": old_display_name,
+            "new_display_name": user_update.display_name,
+        }),
+    )
+    db.add(event)
+    # ──────────────────────────────────────────────────────────────
+
+    db.commit()
+    db.refresh(db_user)
+    return db_user

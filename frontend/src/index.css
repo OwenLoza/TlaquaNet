@@ -528,6 +528,34 @@ body::before {
   font-size: 0.6rem;
 }
 
+/* ── Update Profile ─────────────────────────────────────────── */
+.update-profile-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  animation: fadeIn 0.3s ease;
+}
+
+.update-profile-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  outline: none;
+}
+
+.update-profile-bar .update-btn {
+  padding: 4px 12px;
+  font-size: 0.7rem;
+}
+
 /* ── Analytics Panel ────────────────────────────────────────── */
 .analytics-grid {
   display: grid;

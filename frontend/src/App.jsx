@@ -8,7 +8,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { getUsers, getPosts, getSummary } from './api.js';
+import { getUsers, getPosts, getSummary, updateUser } from './api.js';
 
 import CreateUserForm from './components/CreateUserForm.jsx';
 import CreatePostForm from './components/CreatePostForm.jsx';
@@ -25,6 +25,8 @@ function App() {
     const [summary, setSummary] = useState(null);
     const [toast, setToast] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [editingName, setEditingName] = useState('');
+    const [isUpdating, setIsUpdating] = useState(false);
 
     // ── Data Fetching ──────────────────────────────────────────
     const fetchUsers = useCallback(async () => {
@@ -65,6 +67,15 @@ function App() {
         refreshAll();
     }, [refreshAll]);
 
+    // Update editingName when currentUser changes
+    useEffect(() => {
+        if (currentUser) {
+            setEditingName(currentUser.display_name);
+        } else {
+            setEditingName('');
+        }
+    }, [currentUser]);
+
     // ── Toast Notifications ────────────────────────────────────
     const showToast = (message, type = 'success') => {
         setToast({ message, type, id: Date.now() });
@@ -89,6 +100,31 @@ function App() {
     const handlePostUpdated = () => {
         fetchPosts();
         fetchSummary();
+    };
+
+    const handleUpdateName = async () => {
+        if (!currentUser || !editingName.trim() || editingName === currentUser.display_name) return;
+
+        setIsUpdating(true);
+        try {
+            const updatedUser = await updateUser(currentUser.id, editingName.trim());
+
+            // Update local users list
+            setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+
+            // Update current user
+            setCurrentUser(updatedUser);
+
+            // Refresh posts to show new name
+            fetchPosts();
+            fetchSummary();
+
+            showToast('Display name updated! ✨');
+        } catch (err) {
+            showToast(`Update failed: ${err.message}`, 'error');
+        } finally {
+            setIsUpdating(false);
+        }
     };
 
     // ── Render ─────────────────────────────────────────────────
@@ -125,6 +161,30 @@ function App() {
                             </button>
                         ))}
                     </div>
+
+                    {/* Quick Update Display Name */}
+                    {currentUser && (
+                        <div className="update-profile-bar">
+                            <span style={{ fontSize: '1.2rem' }}>✏️</span>
+                            <input
+                                type="text"
+                                value={editingName}
+                                onChange={(e) => setEditingName(e.target.value)}
+                                placeholder="Change display name..."
+                                disabled={isUpdating}
+                                onKeyDown={(e) => e.key === 'Enter' && handleUpdateName()}
+                            />
+                            {editingName !== currentUser.display_name && (
+                                <button
+                                    className="btn btn-primary update-btn"
+                                    onClick={handleUpdateName}
+                                    disabled={isUpdating || !editingName.trim()}
+                                >
+                                    {isUpdating ? '...' : 'Save'}
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
 

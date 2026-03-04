@@ -40,6 +40,16 @@ class UserCreate(BaseModel):
     )
 
 
+class UserUpdate(BaseModel):
+    """Schema for updating user data."""
+    display_name: str = Field(
+        ...,
+        min_length=1,
+        max_length=100,
+        description="Updated display name"
+    )
+
+
 class UserResponse(BaseModel):
     """Schema for returning user data. Includes server-generated fields."""
     id: int

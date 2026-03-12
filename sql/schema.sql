@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS posts (
     id          SERIAL PRIMARY KEY,
     content     TEXT NOT NULL,
     author_id   INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    image_url   VARCHAR(500),
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

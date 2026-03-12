@@ -76,6 +76,11 @@ class PostCreate(BaseModel):
         ...,
         description="ID of the user creating the post"
     )
+    image_url: Optional[str] = Field(
+        None,
+        max_length=500,
+        description="Optional image URL for the post"
+    )
 
 
 class PostResponse(BaseModel):
@@ -88,6 +93,7 @@ class PostResponse(BaseModel):
     author_id: int
     author: Optional[UserResponse] = None
     created_at: datetime
+    image_url: Optional[str] = None
     like_count: int = 0
     comment_count: int = 0
     comments: list["CommentResponse"] = []

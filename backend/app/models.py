@@ -83,6 +83,7 @@ class Post(Base):
         nullable=False,
         index=True
     )
+    image_url = Column(String(500), nullable=True)  # Optional image URL
     created_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

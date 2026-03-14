@@ -9,6 +9,7 @@ import { createPost } from '../api.js';
 
 function CreatePostForm({ currentUser, onPostCreated, onError }) {
     const [content, setContent] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
     const handleSubmit = async (e) => {
@@ -17,9 +18,10 @@ function CreatePostForm({ currentUser, onPostCreated, onError }) {
 
         setSubmitting(true);
         try {
-            const newPost = await createPost(content.trim(), currentUser.id);
+            const newPost = await createPost(content.trim(), currentUser.id, imageUrl.trim() || null);
             onPostCreated(newPost);
             setContent('');
+            setImageUrl('');
         } catch (err) {
             onError(err.message);
         } finally {
@@ -62,6 +64,17 @@ function CreatePostForm({ currentUser, onPostCreated, onError }) {
                 >
                     {charCount}/{maxChars}
                 </div>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: 'var(--space-md)' }}>
+                <input
+                    type="url"
+                    className="form-input"
+                    placeholder="Image URL (optional)..."
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    style={{ fontSize: 'var(--font-size-sm)' }}
+                />
             </div>
 
             <button

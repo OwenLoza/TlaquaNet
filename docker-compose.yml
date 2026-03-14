@@ -18,6 +18,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: tlaquanet
+    command: ["postgres", "-c", "wal_level=logical"]
     ports:
       - "5432:5432"
     volumes:
@@ -28,6 +29,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - tlaqua-network
 
   # ── FastAPI Backend ─────────────────────────────────────────
   api:
@@ -42,6 +45,13 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - tlaqua-network
+
+networks:
+  tlaqua-network:
+    name: tlaqua-network
+    driver: bridge
 
 volumes:
   pgdata:

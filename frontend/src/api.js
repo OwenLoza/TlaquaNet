@@ -52,10 +52,14 @@ export const updateUser = (userId, displayName) =>
 
 // ── Posts ─────────────────────────────────────────────────────
 
-export const createPost = (content, authorId) =>
+export const createPost = (content, authorId, imageUrl = null) =>
     request('/api/posts/', {
         method: 'POST',
-        body: JSON.stringify({ content, author_id: authorId }),
+        body: JSON.stringify({
+            content,
+            author_id: authorId,
+            image_url: imageUrl
+        }),
     });
 
 export const getPosts = (skip = 0, limit = 50) =>

@@ -17,6 +17,8 @@ function PostCard({ post, currentUser, onUpdated, onError, showToast }) {
     const [submittingComment, setSubmittingComment] = useState(false);
     const [likeAnimating, setLikeAnimating] = useState(false);
 
+    console.log(`Checking post #${post.id}:`, { has_image: !!post.image_url, url: post.image_url });
+
     // Check if current user has liked this post
     const isLiked = currentUser && post.liked_by.includes(currentUser.id);
 
@@ -96,6 +98,43 @@ function PostCard({ post, currentUser, onUpdated, onError, showToast }) {
 
             {/* Post Content */}
             <div className="post-content">{post.content}</div>
+
+            {/* Post Image */}
+            {post.image_url && (
+                <div 
+                    className="post-image-container" 
+                    style={{ 
+                        margin: 'var(--space-md) -var(--space-md)', 
+                        background: 'rgba(255,255,255,0.05)',
+                        borderTop: '1px solid var(--border-color)',
+                        borderBottom: '1px solid var(--border-color)',
+                        minHeight: '100px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}
+                >
+                    <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', marginBottom: 'var(--space-xs)' }}>
+                        🖼️ Image Attachment
+                    </div>
+                    <img
+                        src={post.image_url}
+                        alt="Post media"
+                        style={{
+                            width: '100%',
+                            maxHeight: '500px',
+                            objectFit: 'contain',
+                            display: 'block'
+                        }}
+                        onLoad={() => console.log('Image loaded successfully:', post.image_url)}
+                        onError={(e) => {
+                            console.error('Failed to load image:', post.image_url);
+                            // Don't hide it yet, let's see if the browser shows a broken icon
+                        }}
+                    />
+                </div>
+            )}
 
             {/* Actions: Like & Comment */}
             <div className="post-actions">

@@ -56,7 +56,11 @@ def create_post(post: PostCreate, db: Session = Depends(get_db)):
         )
 
     # Create the post
-    db_post = Post(content=post.content, author_id=post.author_id)
+    db_post = Post(
+        content=post.content,
+        author_id=post.author_id,
+        image_url=post.image_url
+    )
     db.add(db_post)
     db.flush()
 
@@ -68,6 +72,8 @@ def create_post(post: PostCreate, db: Session = Depends(get_db)):
         event_metadata=json.dumps({
             "content_length": len(post.content),
             "preview": post.content[:100],
+            "has_image": bool(post.image_url),
+            "image_url": post.image_url,
         }),
     )
     db.add(event)
@@ -331,6 +337,7 @@ def _build_post_response(post: Post) -> PostResponse:
         author_id=post.author_id,
         author=post.author,
         created_at=post.created_at,
+        image_url=post.image_url,
         like_count=len(post.likes),
         comment_count=len(post.comments),
         liked_by=[like.user_id for like in post.likes],
